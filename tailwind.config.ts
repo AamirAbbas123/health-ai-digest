@@ -6,6 +6,20 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    // Dynamic color palette used by auto-color system
+    ...[
+      "blue", "emerald", "purple", "amber", "rose", "teal", "cyan",
+      "indigo", "orange", "pink", "lime", "violet", "sky", "fuchsia",
+    ].flatMap((color) => [
+      `bg-${color}-100`, `bg-${color}-50`,
+      `dark:bg-${color}-900/40`, `dark:bg-${color}-950/30`,
+      `text-${color}-700`, `text-${color}-300`,
+      `dark:text-${color}-300`,
+      `border-${color}-400`,
+      `from-${color}-500`, `to-${color}-600`,
+    ]),
+  ],
   darkMode: "class",
   theme: {
     extend: {
