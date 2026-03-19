@@ -11,7 +11,9 @@ datasource db {
 model Article {
   id            Int      @id @default(autoincrement())
   title         String
+  shortTitle    String?
   category      String
+  subCategory   String?
   fullContent   String   @db.Text
   mediumSummary String   @db.Text
   shortSummary  String   @db.Text

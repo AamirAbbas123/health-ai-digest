@@ -45,7 +45,9 @@ export async function POST(request: NextRequest) {
     const article = await prisma.article.create({
       data: {
         title: formData.get("title") as string,
+        shortTitle: (formData.get("shortTitle") as string) || null,
         category: formData.get("category") as string,
+        subCategory: (formData.get("subCategory") as string) || null,
         fullContent: formData.get("fullContent") as string,
         mediumSummary: formData.get("mediumSummary") as string,
         shortSummary: formData.get("shortSummary") as string,

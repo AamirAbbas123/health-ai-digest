@@ -12,7 +12,9 @@ import ArticleCard from "@/components/ArticleCard";
 interface Article {
   id: number;
   title: string;
+  shortTitle?: string | null;
   category: string;
+  subCategory?: string | null;
   fullContent: string;
   mediumSummary: string;
   shortSummary: string;
@@ -101,12 +103,23 @@ export default function ArticleDetailPage() {
             Back to articles
           </button>
 
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <CategoryBadge category={article.category} />
+            {article.subCategory && (
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+                {article.subCategory}
+              </span>
+            )}
             <span className="text-sm text-gray-400 dark:text-gray-500">
               {format(new Date(article.publishedAt), "MMMM d, yyyy")}
             </span>
           </div>
+
+          {article.shortTitle && (
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary-500 dark:text-primary-400 mb-2">
+              {article.shortTitle}
+            </p>
+          )}
 
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             {article.title}

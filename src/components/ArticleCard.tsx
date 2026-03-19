@@ -9,7 +9,9 @@ import CategoryBadge from "./CategoryBadge";
 interface Article {
   id: number;
   title: string;
+  shortTitle?: string | null;
   category: string;
+  subCategory?: string | null;
   fullContent: string;
   mediumSummary: string;
   shortSummary: string;
@@ -47,12 +49,22 @@ export default function ArticleCard({ article }: { article: Article }) {
         </div>
       </Link>
       <div className="p-5">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           <CategoryBadge category={article.category} />
+          {article.subCategory && (
+            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+              {article.subCategory}
+            </span>
+          )}
           <span className="text-xs text-gray-400 dark:text-gray-500">
             {format(new Date(article.publishedAt), "MMM d, yyyy")}
           </span>
         </div>
+        {article.shortTitle && (
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-primary-500 dark:text-primary-400 mb-1">
+            {article.shortTitle}
+          </p>
+        )}
         <Link href={`/articles/${article.id}`}>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-500 transition-colors">
             {article.title}

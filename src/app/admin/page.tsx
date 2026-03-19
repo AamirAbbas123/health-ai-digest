@@ -41,9 +41,11 @@ export default function AdminPage() {
 
   // Form state
   const [title, setTitle] = useState("");
+  const [shortTitle, setShortTitle] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [customCategory, setCustomCategory] = useState("");
   const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [subCategory, setSubCategory] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [publishedAt, setPublishedAt] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -67,12 +69,12 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isLoggedIn) return;
     const interval = setInterval(() => {
-      const draft = { title, category, customCategory, isCustomCategory, authorName, sourceUrl, publishedAt, fullContent, mediumSummary, shortSummary };
+      const draft = { title, shortTitle, category, customCategory, isCustomCategory, subCategory, authorName, sourceUrl, publishedAt, fullContent, mediumSummary, shortSummary };
       localStorage.setItem("admin_draft", JSON.stringify(draft));
       setAutoSaveTime(format(new Date(), "HH:mm"));
     }, 30000);
     return () => clearInterval(interval);
-  }, [isLoggedIn, title, category, customCategory, isCustomCategory, authorName, sourceUrl, publishedAt, fullContent, mediumSummary, shortSummary]);
+  }, [isLoggedIn, title, shortTitle, category, customCategory, isCustomCategory, subCategory, authorName, sourceUrl, publishedAt, fullContent, mediumSummary, shortSummary]);
 
   // Restore draft on mount
   useEffect(() => {
@@ -82,9 +84,11 @@ export default function AdminPage() {
       try {
         const draft = JSON.parse(saved);
         if (draft.title) setTitle(draft.title);
+        if (draft.shortTitle) setShortTitle(draft.shortTitle);
         if (draft.category) setCategory(draft.category);
         if (draft.customCategory) setCustomCategory(draft.customCategory);
         if (draft.isCustomCategory) setIsCustomCategory(draft.isCustomCategory);
+        if (draft.subCategory) setSubCategory(draft.subCategory);
         if (draft.authorName) setAuthorName(draft.authorName);
         if (draft.sourceUrl) setSourceUrl(draft.sourceUrl);
         if (draft.publishedAt) setPublishedAt(draft.publishedAt);
@@ -129,9 +133,11 @@ export default function AdminPage() {
 
   const resetForm = () => {
     setTitle("");
+    setShortTitle("");
     setCategory(CATEGORIES[0]);
     setCustomCategory("");
     setIsCustomCategory(false);
+    setSubCategory("");
     setAuthorName("");
     setSourceUrl("");
     setPublishedAt(format(new Date(), "yyyy-MM-dd"));
@@ -152,7 +158,9 @@ export default function AdminPage() {
 
     const formData = new FormData();
     formData.set("title", title);
+    formData.set("shortTitle", shortTitle);
     formData.set("category", isCustomCategory ? customCategory : category);
+    formData.set("subCategory", subCategory);
     formData.set("fullContent", fullContent);
     formData.set("mediumSummary", mediumSummary);
     formData.set("shortSummary", shortSummary);
@@ -182,6 +190,7 @@ export default function AdminPage() {
   const handleEdit = (article: Article) => {
     setEditingId(article.id);
     setTitle(article.title);
+    setShortTitle((article as unknown as { shortTitle?: string }).shortTitle || "");
     const isCat = (CATEGORIES as readonly string[]).includes(article.category);
     if (isCat) {
       setCategory(article.category);
@@ -190,6 +199,7 @@ export default function AdminPage() {
       setIsCustomCategory(true);
       setCustomCategory(article.category);
     }
+    setSubCategory((article as unknown as { subCategory?: string }).subCategory || "");
     setAuthorName(article.authorName || "");
     setSourceUrl(article.sourceUrl || "");
     setPublishedAt(format(new Date(article.publishedAt), "yyyy-MM-dd"));
@@ -328,6 +338,16 @@ export default function AdminPage() {
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Short Title <span className="text-xs text-gray-400 font-normal">(2-3 words, shown above title)</span></label>
+              <input
+                type="text"
+                value={shortTitle}
+                onChange={(e) => setShortTitle(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+                placeholder="e.g. CKD Detection, MRI Enhancement"
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
               <select
                 value={isCustomCategory ? "Custom..." : category}
@@ -355,6 +375,16 @@ export default function AdminPage() {
                   placeholder="Enter custom category"
                 />
               )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sub-theme <span className="text-xs text-gray-400 font-normal">(topic within category)</span></label>
+              <input
+                type="text"
+                value={subCategory}
+                onChange={(e) => setSubCategory(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+                placeholder="e.g. Kidney Disease, Fracture Detection, Racial Bias"
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Author Name</label>

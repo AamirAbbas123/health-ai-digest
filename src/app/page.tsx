@@ -9,7 +9,9 @@ import { CATEGORIES } from "@/lib/categories";
 interface Article {
   id: number;
   title: string;
+  shortTitle?: string | null;
   category: string;
+  subCategory?: string | null;
   fullContent: string;
   mediumSummary: string;
   shortSummary: string;
