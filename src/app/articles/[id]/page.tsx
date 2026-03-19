@@ -8,6 +8,7 @@ import { useContentLevel } from "@/context/ContentLevelContext";
 import ContentSlider from "@/components/ContentSlider";
 import CategoryBadge from "@/components/CategoryBadge";
 import ArticleCard from "@/components/ArticleCard";
+import MarkdownContent from "@/components/MarkdownContent";
 
 interface Article {
   id: number;
@@ -138,15 +139,8 @@ export default function ArticleDetailPage() {
           </div>
 
           {/* Article Content */}
-          <div
-            key={level}
-            className="animate-fade-in prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed"
-          >
-            {content.split("\n\n").map((paragraph, i) => (
-              <p key={i} className="mb-4">
-                {paragraph}
-              </p>
-            ))}
+          <div key={level} className="animate-fade-in">
+            <MarkdownContent content={content} />
           </div>
 
           {article.sourceUrl && (

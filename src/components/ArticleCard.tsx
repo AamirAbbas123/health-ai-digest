@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { useContentLevel } from "@/context/ContentLevelContext";
+import MarkdownContent from "./MarkdownContent";
 // Soft, eye-pleasing card background colors
 const CARD_BG_COLORS = [
   { bg: "bg-sky-100 dark:bg-sky-900/40", text: "text-sky-700 dark:text-sky-200" },
@@ -44,9 +45,7 @@ export default function ArticleCard({ article }: { article: Article }) {
       ? article.mediumSummary
       : article.shortSummary;
 
-  const maxLen = level === 1 ? 400 : level === 2 ? 250 : content.length;
-  const truncatedContent =
-    content.length > maxLen ? content.slice(0, maxLen) + "..." : content;
+  const maxLen = level === 1 ? 400 : level === 2 ? 250 : 0;
 
   const hasRealImage = article.imageUrl && !article.imageUrl.includes("placehold.co");
   const cardColor = getCardColor(article.id);
@@ -82,11 +81,8 @@ export default function ArticleCard({ article }: { article: Article }) {
             {article.title}
           </h3>
         </Link>
-        <div
-          key={level}
-          className="animate-fade-in text-sm text-gray-600 dark:text-gray-300 leading-relaxed"
-        >
-          <p className="whitespace-pre-line">{truncatedContent}</p>
+        <div key={level} className="animate-fade-in">
+          <MarkdownContent content={content} truncate={maxLen || undefined} />
         </div>
         <Link
           href={`/articles/${article.id}`}
