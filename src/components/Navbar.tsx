@@ -35,12 +35,6 @@ export default function Navbar() {
             </span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link
-              href="/admin"
-              className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
-            >
-              Admin
-            </Link>
             <button
               onClick={toggleDark}
               className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
