@@ -1,47 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ArticleCard from "@/components/ArticleCard";
-import SkeletonCard from "@/components/SkeletonCard";
-import ContentSlider from "@/components/ContentSlider";
-import { CATEGORIES } from "@/lib/categories";
+import Link from "next/link";
+import { CATEGORIES, CATEGORY_ICONS, CATEGORY_DESCRIPTIONS, getCategoryColor } from "@/lib/categories";
 
-interface Article {
-  id: number;
-  title: string;
-  shortTitle?: string | null;
+interface CategoryCount {
   category: string;
-  subCategory?: string | null;
-  fullContent: string;
-  mediumSummary: string;
-  shortSummary: string;
-  imageUrl: string | null;
-  authorName: string | null;
-  publishedAt: string;
+  _count: { id: number };
 }
 
 export default function Home() {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
-    async function fetchArticles() {
+    async function fetchCounts() {
       try {
-        const params = new URLSearchParams();
-        if (activeCategory !== "All") params.set("category", activeCategory);
-        const res = await fetch(`/api/articles?${params}`);
-        const data = await res.json();
-        setArticles(data);
+        const res = await fetch("/api/articles?groupBy=category");
+        const data: CategoryCount[] = await res.json();
+        const map: Record<string, number> = {};
+        data.forEach((c) => {
+          map[c.category] = c._count.id;
+        });
+        setCounts(map);
       } catch (err) {
-        console.error("Failed to fetch articles:", err);
+        console.error("Failed to fetch category counts:", err);
       } finally {
         setLoading(false);
       }
     }
-    setLoading(true);
-    fetchArticles();
-  }, [activeCategory]);
+    fetchCounts();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -59,48 +48,63 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-gray-950" />
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Category Filters */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {["All", ...CATEGORIES].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeCategory === cat
-                  ? "bg-primary-500 text-white shadow-md"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Content Slider */}
-        <div className="bg-surface dark:bg-gray-900 rounded-xl p-4 mb-8 border border-gray-200 dark:border-gray-800">
-          <p className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-            Summary Detail Level
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Browse by Category
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400">
+            Select a category to explore sub-topics and articles
           </p>
-          <ContentSlider />
         </div>
 
-        {/* Article Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Category Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {loading
-            ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-            : articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-        </div>
+            ? Array.from({ length: 7 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="animate-pulse bg-white dark:bg-gray-800 rounded-xl p-6 h-48 border border-gray-100 dark:border-gray-700"
+                >
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl mb-4" />
+                  <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
+                  <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+                  <div className="h-3 w-2/3 bg-gray-200 dark:bg-gray-700 rounded" />
+                </div>
+              ))
+            : CATEGORIES.map((cat) => {
+                const colors = getCategoryColor(cat);
+                const count = counts[cat] || 0;
+                const icon = CATEGORY_ICONS[cat] || "📄";
+                const description = CATEGORY_DESCRIPTIONS[cat] || "";
 
-        {!loading && articles.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-gray-500 dark:text-gray-400 text-lg">
-              No articles found in this category.
-            </p>
-          </div>
-        )}
+                return (
+                  <Link
+                    key={cat}
+                    href={`/category/${encodeURIComponent(cat)}`}
+                    className="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                  >
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 ${colors.bg}`}>
+                      {icon}
+                    </div>
+                    <h3 className={`text-lg font-bold mb-2 group-hover:text-primary-500 transition-colors text-gray-900 dark:text-white`}>
+                      {cat}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex-1 line-clamp-2">
+                      {description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${colors.bg} ${colors.text}`}>
+                        {count} {count === 1 ? "article" : "articles"}
+                      </span>
+                      <span className="text-sm text-primary-500 dark:text-primary-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                        Explore →
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+        </div>
       </div>
     </div>
   );

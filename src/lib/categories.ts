@@ -5,6 +5,7 @@ export const CATEGORIES = [
   "AI Ethics",
   "Wearables & Diagnostics",
   "Policy & Regulation",
+  "LLMs in Healthcare",
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
@@ -16,6 +17,27 @@ export const CATEGORY_COLORS: Record<string, { bg: string; text: string; border:
   "AI Ethics": { bg: "bg-amber-100 dark:bg-amber-900/40", text: "text-amber-700 dark:text-amber-300", border: "border-amber-400" },
   "Wearables & Diagnostics": { bg: "bg-rose-100 dark:bg-rose-900/40", text: "text-rose-700 dark:text-rose-300", border: "border-rose-400" },
   "Policy & Regulation": { bg: "bg-teal-100 dark:bg-teal-900/40", text: "text-teal-700 dark:text-teal-300", border: "border-teal-400" },
+  "LLMs in Healthcare": { bg: "bg-cyan-100 dark:bg-cyan-900/40", text: "text-cyan-700 dark:text-cyan-300", border: "border-cyan-400" },
+};
+
+export const CATEGORY_ICONS: Record<string, string> = {
+  "Clinical AI": "🏥",
+  "Drug Discovery": "💊",
+  "Medical Imaging": "🔬",
+  "AI Ethics": "⚖️",
+  "Wearables & Diagnostics": "⌚",
+  "Policy & Regulation": "📋",
+  "LLMs in Healthcare": "🤖",
+};
+
+export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  "Clinical AI": "AI-powered tools for clinical decision support, diagnosis, and patient care optimization",
+  "Drug Discovery": "Machine learning approaches to drug development, biomarker discovery, and therapeutic innovation",
+  "Medical Imaging": "Deep learning models for medical image analysis, segmentation, and diagnostic imaging",
+  "AI Ethics": "Fairness, bias, privacy, and governance frameworks for responsible AI in healthcare",
+  "Wearables & Diagnostics": "Smart sensors, wearable devices, and AI-driven continuous health monitoring",
+  "Policy & Regulation": "Regulatory frameworks, governance, and policy for AI in healthcare systems",
+  "LLMs in Healthcare": "Large language models for clinical reasoning, patient communication, and medical education",
 };
 
 export function getCategoryColor(category: string) {

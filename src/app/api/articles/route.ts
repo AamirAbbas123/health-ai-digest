@@ -7,13 +7,40 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
+    const subCategory = searchParams.get("subCategory");
     const limit = searchParams.get("limit");
     const offset = searchParams.get("offset");
+    const groupBy = searchParams.get("groupBy");
+
+    // Return distinct sub-categories for a given category
+    if (groupBy === "subCategory" && category) {
+      const articles = await prisma.article.findMany({
+        where: { isPublished: true, category },
+        select: { subCategory: true },
+        distinct: ["subCategory"],
+        orderBy: { subCategory: "asc" },
+      });
+      const subCategories = articles
+        .map((a) => a.subCategory)
+        .filter((s): s is string => !!s);
+      return NextResponse.json(subCategories);
+    }
+
+    // Return article counts per category
+    if (groupBy === "category") {
+      const counts = await prisma.article.groupBy({
+        by: ["category"],
+        where: { isPublished: true },
+        _count: { id: true },
+      });
+      return NextResponse.json(counts);
+    }
 
     const articles = await prisma.article.findMany({
       where: {
         isPublished: true,
         ...(category ? { category } : {}),
+        ...(subCategory ? { subCategory } : {}),
       },
       orderBy: { publishedAt: "desc" },
       ...(limit ? { take: parseInt(limit) } : {}),
