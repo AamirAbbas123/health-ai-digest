@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CATEGORIES, CATEGORY_ICONS, CATEGORY_DESCRIPTIONS, getCategoryColor } from "@/lib/categories";
+import { getCategoryColor, CATEGORY_ICONS, CATEGORY_DESCRIPTIONS } from "@/lib/categories";
 
 interface CategoryCount {
   category: string;
@@ -10,7 +10,7 @@ interface CategoryCount {
 }
 
 export default function Home() {
-  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [categories, setCategories] = useState<{ name: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,11 +18,11 @@ export default function Home() {
       try {
         const res = await fetch("/api/articles?groupBy=category");
         const data: CategoryCount[] = await res.json();
-        const map: Record<string, number> = {};
-        data.forEach((c) => {
-          map[c.category] = c._count.id;
-        });
-        setCounts(map);
+        const cats = data.map((c) => ({
+          name: c.category,
+          count: c._count.id,
+        })).sort((a, b) => a.name.localeCompare(b.name));
+        setCategories(cats);
       } catch (err) {
         console.error("Failed to fetch category counts:", err);
       } finally {
@@ -61,7 +61,7 @@ export default function Home() {
         {/* Category Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {loading
-            ? Array.from({ length: 7 }).map((_, i) => (
+            ? Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
                   className="animate-pulse bg-white dark:bg-gray-800 rounded-xl p-6 h-48 border border-gray-100 dark:border-gray-700"
@@ -72,30 +72,31 @@ export default function Home() {
                   <div className="h-3 w-2/3 bg-gray-200 dark:bg-gray-700 rounded" />
                 </div>
               ))
-            : CATEGORIES.map((cat) => {
-                const colors = getCategoryColor(cat);
-                const count = counts[cat] || 0;
-                const icon = CATEGORY_ICONS[cat] || "📄";
-                const description = CATEGORY_DESCRIPTIONS[cat] || "";
+            : categories.map((cat) => {
+                const colors = getCategoryColor(cat.name);
+                const icon = CATEGORY_ICONS[cat.name] || "📄";
+                const description = CATEGORY_DESCRIPTIONS[cat.name] || "";
 
                 return (
                   <Link
-                    key={cat}
-                    href={`/category/${encodeURIComponent(cat)}`}
+                    key={cat.name}
+                    href={`/category/${encodeURIComponent(cat.name)}`}
                     className="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
                   >
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 ${colors.bg}`}>
                       {icon}
                     </div>
-                    <h3 className={`text-lg font-bold mb-2 group-hover:text-primary-500 transition-colors text-gray-900 dark:text-white`}>
-                      {cat}
+                    <h3 className="text-lg font-bold mb-2 group-hover:text-primary-500 transition-colors text-gray-900 dark:text-white">
+                      {cat.name}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex-1 line-clamp-2">
-                      {description}
-                    </p>
-                    <div className="flex items-center justify-between">
+                    {description && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex-1 line-clamp-2">
+                        {description}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between mt-auto">
                       <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${colors.bg} ${colors.text}`}>
-                        {count} {count === 1 ? "article" : "articles"}
+                        {cat.count} {cat.count === 1 ? "article" : "articles"}
                       </span>
                       <span className="text-sm text-primary-500 dark:text-primary-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                         Explore →
@@ -105,6 +106,20 @@ export default function Home() {
                 );
               })}
         </div>
+
+        {!loading && categories.length === 0 && (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">📝</span>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+              No categories yet
+            </p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">
+              Add articles via the admin panel to create categories
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

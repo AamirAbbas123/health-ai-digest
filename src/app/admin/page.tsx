@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
-import { CATEGORIES } from "@/lib/categories";
 import CategoryBadge from "@/components/CategoryBadge";
 import ContentSlider from "@/components/ContentSlider";
 import { useContentLevel } from "@/context/ContentLevelContext";
@@ -42,9 +41,7 @@ export default function AdminPage() {
   // Form state
   const [title, setTitle] = useState("");
   const [shortTitle, setShortTitle] = useState("");
-  const [category, setCategory] = useState<string>(CATEGORIES[0]);
-  const [customCategory, setCustomCategory] = useState("");
-  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
@@ -69,12 +66,12 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isLoggedIn) return;
     const interval = setInterval(() => {
-      const draft = { title, shortTitle, category, customCategory, isCustomCategory, subCategory, authorName, sourceUrl, publishedAt, fullContent, mediumSummary, shortSummary };
+      const draft = { title, shortTitle, category, subCategory, authorName, sourceUrl, publishedAt, fullContent, mediumSummary, shortSummary };
       localStorage.setItem("admin_draft", JSON.stringify(draft));
       setAutoSaveTime(format(new Date(), "HH:mm"));
     }, 30000);
     return () => clearInterval(interval);
-  }, [isLoggedIn, title, shortTitle, category, customCategory, isCustomCategory, subCategory, authorName, sourceUrl, publishedAt, fullContent, mediumSummary, shortSummary]);
+  }, [isLoggedIn, title, shortTitle, category, subCategory, authorName, sourceUrl, publishedAt, fullContent, mediumSummary, shortSummary]);
 
   // Restore draft on mount
   useEffect(() => {
@@ -86,8 +83,6 @@ export default function AdminPage() {
         if (draft.title) setTitle(draft.title);
         if (draft.shortTitle) setShortTitle(draft.shortTitle);
         if (draft.category) setCategory(draft.category);
-        if (draft.customCategory) setCustomCategory(draft.customCategory);
-        if (draft.isCustomCategory) setIsCustomCategory(draft.isCustomCategory);
         if (draft.subCategory) setSubCategory(draft.subCategory);
         if (draft.authorName) setAuthorName(draft.authorName);
         if (draft.sourceUrl) setSourceUrl(draft.sourceUrl);
@@ -134,9 +129,7 @@ export default function AdminPage() {
   const resetForm = () => {
     setTitle("");
     setShortTitle("");
-    setCategory(CATEGORIES[0]);
-    setCustomCategory("");
-    setIsCustomCategory(false);
+    setCategory("");
     setSubCategory("");
     setAuthorName("");
     setSourceUrl("");
@@ -151,15 +144,15 @@ export default function AdminPage() {
   };
 
   const handleSubmit = async (publish: boolean) => {
-    if (!title.trim() || !fullContent.trim()) {
-      toast.error("Title and Detailed Summary are required");
+    if (!title.trim() || !fullContent.trim() || !category.trim()) {
+      toast.error("Title, Category, and Detailed Summary are required");
       return;
     }
 
     const formData = new FormData();
     formData.set("title", title);
     formData.set("shortTitle", shortTitle);
-    formData.set("category", isCustomCategory ? customCategory : category);
+    formData.set("category", category);
     formData.set("subCategory", subCategory);
     formData.set("fullContent", fullContent);
     formData.set("mediumSummary", mediumSummary);
@@ -191,14 +184,7 @@ export default function AdminPage() {
     setEditingId(article.id);
     setTitle(article.title);
     setShortTitle((article as unknown as { shortTitle?: string }).shortTitle || "");
-    const isCat = (CATEGORIES as readonly string[]).includes(article.category);
-    if (isCat) {
-      setCategory(article.category);
-      setIsCustomCategory(false);
-    } else {
-      setIsCustomCategory(true);
-      setCustomCategory(article.category);
-    }
+    setCategory(article.category);
     setSubCategory((article as unknown as { subCategory?: string }).subCategory || "");
     setAuthorName(article.authorName || "");
     setSourceUrl(article.sourceUrl || "");
@@ -348,36 +334,18 @@ export default function AdminPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-              <select
-                value={isCustomCategory ? "Custom..." : category}
-                onChange={(e) => {
-                  if (e.target.value === "Custom...") {
-                    setIsCustomCategory(true);
-                  } else {
-                    setIsCustomCategory(false);
-                    setCategory(e.target.value);
-                  }
-                }}
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category <span className="text-red-400">*</span></label>
+              <input
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-                <option value="Custom...">Custom...</option>
-              </select>
-              {isCustomCategory && (
-                <input
-                  type="text"
-                  value={customCategory}
-                  onChange={(e) => setCustomCategory(e.target.value)}
-                  className="w-full mt-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
-                  placeholder="Enter custom category"
-                />
-              )}
+                placeholder="e.g. Clinical AI, Drug Discovery, Medical Imaging"
+              />
+              <p className="text-xs text-gray-400 mt-1">This creates a Level 1 category on the homepage</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sub-theme <span className="text-xs text-gray-400 font-normal">(topic within category)</span></label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sub-theme <span className="text-red-400">*</span></label>
               <input
                 type="text"
                 value={subCategory}
@@ -385,6 +353,7 @@ export default function AdminPage() {
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
                 placeholder="e.g. Kidney Disease, Fracture Detection, Racial Bias"
               />
+              <p className="text-xs text-gray-400 mt-1">This creates a Level 2 sub-topic within the category</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Author Name</label>
@@ -500,7 +469,7 @@ export default function AdminPage() {
                       </div>
                     )}
                     <div className="p-4">
-                      <CategoryBadge category={isCustomCategory ? customCategory : category} />
+                      <CategoryBadge category={category || "Category"} />
                       <h3 className="text-lg font-semibold mt-2 text-gray-900 dark:text-white">
                         {title || "Article Title"}
                       </h3>
