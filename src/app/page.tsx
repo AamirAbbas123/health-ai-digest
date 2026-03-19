@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getCategoryColor, CATEGORY_ICONS, CATEGORY_DESCRIPTIONS } from "@/lib/categories";
+import { getAutoColor } from "@/lib/categories";
 
 interface CategoryCount {
   category: string;
@@ -50,11 +50,14 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-10">
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary-500 dark:text-primary-400 mb-2">
+            Level 1
+          </p>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Browse by Category
+            Main Categories
           </h2>
           <p className="text-gray-500 dark:text-gray-400">
-            Select a category to explore sub-topics and articles
+            Select a category to explore its sub-topics
           </p>
         </div>
 
@@ -64,43 +67,47 @@ export default function Home() {
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="animate-pulse bg-white dark:bg-gray-800 rounded-xl p-6 h-48 border border-gray-100 dark:border-gray-700"
+                  className="animate-pulse rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700"
                 >
-                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl mb-4" />
-                  <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
-                  <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-                  <div className="h-3 w-2/3 bg-gray-200 dark:bg-gray-700 rounded" />
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700" />
+                  <div className="bg-white dark:bg-gray-800 p-6">
+                    <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
+                    <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+                    <div className="h-3 w-2/3 bg-gray-200 dark:bg-gray-700 rounded" />
+                  </div>
                 </div>
               ))
             : categories.map((cat) => {
-                const colors = getCategoryColor(cat.name);
-                const icon = CATEGORY_ICONS[cat.name] || "📄";
-                const description = CATEGORY_DESCRIPTIONS[cat.name] || "";
+                const colors = getAutoColor(cat.name);
 
                 return (
                   <Link
                     key={cat.name}
                     href={`/category/${encodeURIComponent(cat.name)}`}
-                    className="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                    className="group rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                   >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 ${colors.bg}`}>
-                      {icon}
-                    </div>
-                    <h3 className="text-lg font-bold mb-2 group-hover:text-primary-500 transition-colors text-gray-900 dark:text-white">
-                      {cat.name}
-                    </h3>
-                    {description && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex-1 line-clamp-2">
-                        {description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between mt-auto">
-                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${colors.bg} ${colors.text}`}>
-                        {cat.count} {cat.count === 1 ? "article" : "articles"}
-                      </span>
-                      <span className="text-sm text-primary-500 dark:text-primary-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                        Explore →
-                      </span>
+                    {/* Color bar at top */}
+                    <div className={`h-2 bg-gradient-to-r ${colors.gradient}`} />
+                    <div className="bg-white dark:bg-gray-800 p-6 flex flex-col h-full">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colors.bg}`}>
+                          <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${colors.gradient}`} />
+                        </div>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${colors.text}`}>
+                          Category
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold mb-3 text-gray-900 dark:text-white group-hover:text-primary-500 transition-colors">
+                        {cat.name}
+                      </h3>
+                      <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${colors.bg} ${colors.text}`}>
+                          {cat.count} {cat.count === 1 ? "article" : "articles"}
+                        </span>
+                        <span className={`text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity ${colors.text}`}>
+                          Explore →
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 );

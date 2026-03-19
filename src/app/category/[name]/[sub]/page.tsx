@@ -6,7 +6,7 @@ import Link from "next/link";
 import ArticleCard from "@/components/ArticleCard";
 import SkeletonCard from "@/components/SkeletonCard";
 import ContentSlider from "@/components/ContentSlider";
-import { getCategoryColor, CATEGORY_ICONS } from "@/lib/categories";
+import { getAutoColor, getSubColor } from "@/lib/categories";
 
 interface Article {
   id: number;
@@ -46,14 +46,15 @@ export default function SubCategoryPage() {
     fetchArticles();
   }, [categoryName, subName]);
 
-  const colors = getCategoryColor(categoryName);
-  const icon = CATEGORY_ICONS[categoryName] || "📄";
+  const catColors = getAutoColor(categoryName);
+  const subColors = getSubColor(subName);
 
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <section className={`relative py-10 sm:py-12 ${colors.bg}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-10 sm:py-12 overflow-hidden">
+        <div className={`absolute inset-0 bg-gradient-to-br ${subColors.gradient} opacity-8`} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-5 flex-wrap">
             <Link href="/" className="text-gray-500 dark:text-gray-400 hover:text-primary-500 transition-colors">
@@ -62,20 +63,29 @@ export default function SubCategoryPage() {
             <span className="text-gray-400">/</span>
             <Link
               href={`/category/${encodeURIComponent(categoryName)}`}
-              className="text-gray-500 dark:text-gray-400 hover:text-primary-500 transition-colors"
+              className={`hover:text-primary-500 transition-colors ${catColors.text}`}
             >
               {categoryName}
             </Link>
             <span className="text-gray-400">/</span>
-            <span className={`font-medium ${colors.text}`}>{subName}</span>
+            <span className={`font-medium ${subColors.text}`}>{subName}</span>
           </nav>
 
           <div className="flex items-center gap-3">
-            <span className="text-2xl">{icon}</span>
+            <div className="flex items-center gap-2">
+              <div className={`w-3 h-8 rounded-full bg-gradient-to-b ${catColors.gradient}`} />
+              <div className={`w-3 h-8 rounded-full bg-gradient-to-b ${subColors.gradient}`} />
+            </div>
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {categoryName}
-              </p>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${catColors.bg} ${catColors.text}`}>
+                  {categoryName}
+                </span>
+                <span className="text-gray-300 dark:text-gray-600">›</span>
+                <span className={`text-[10px] font-bold uppercase tracking-widest ${subColors.text}`}>
+                  Level 3 · Articles
+                </span>
+              </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                 {subName}
               </h1>
@@ -92,6 +102,13 @@ export default function SubCategoryPage() {
           </p>
           <ContentSlider />
         </div>
+
+        {/* Article count */}
+        {!loading && articles.length > 0 && (
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            {articles.length} {articles.length === 1 ? "article" : "articles"} found
+          </p>
+        )}
 
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
