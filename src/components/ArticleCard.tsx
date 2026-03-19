@@ -74,16 +74,9 @@ export default function ArticleCard({ article }: { article: Article }) {
         )}
       </Link>
       <div className="p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs text-gray-400 dark:text-gray-500">
-            {format(new Date(article.publishedAt), "MMM d, yyyy")}
-          </span>
-          {article.authorName && (
-            <span className="text-xs text-gray-400 dark:text-gray-500">
-              · {article.authorName}
-            </span>
-          )}
-        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+          {format(new Date(article.publishedAt), "MMM d, yyyy")}
+        </p>
         <Link href={`/articles/${article.id}`}>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-500 transition-colors">
             {article.title}
