@@ -4,9 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { useContentLevel } from "@/context/ContentLevelContext";
-import CategoryBadge from "./CategoryBadge";
-import { getSubColor } from "@/lib/categories";
-
 // Soft, eye-pleasing card background colors
 const CARD_BG_COLORS = [
   { bg: "bg-sky-100 dark:bg-sky-900/40", text: "text-sky-700 dark:text-sky-200" },
@@ -53,7 +50,6 @@ export default function ArticleCard({ article }: { article: Article }) {
 
   const hasRealImage = article.imageUrl && !article.imageUrl.includes("placehold.co");
   const cardColor = getCardColor(article.id);
-  const subColor = article.subCategory ? getSubColor(article.subCategory) : null;
 
   return (
     <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-gray-100 dark:border-gray-700">
@@ -78,32 +74,21 @@ export default function ArticleCard({ article }: { article: Article }) {
         )}
       </Link>
       <div className="p-5">
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <CategoryBadge category={article.category} />
-          {article.subCategory && subColor && (
-            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium ${subColor.badge}`}>
-              {article.subCategory}
-            </span>
-          )}
+        <div className="flex items-center gap-2 mb-3">
           <span className="text-xs text-gray-400 dark:text-gray-500">
             {format(new Date(article.publishedAt), "MMM d, yyyy")}
           </span>
+          {article.authorName && (
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              · {article.authorName}
+            </span>
+          )}
         </div>
-        {article.shortTitle && (
-          <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${cardColor.text}`}>
-            {article.shortTitle}
-          </p>
-        )}
         <Link href={`/articles/${article.id}`}>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-500 transition-colors">
             {article.title}
           </h3>
         </Link>
-        {article.authorName && (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-            By {article.authorName}
-          </p>
-        )}
         <div
           key={level}
           className="animate-fade-in text-sm text-gray-600 dark:text-gray-300 leading-relaxed"
