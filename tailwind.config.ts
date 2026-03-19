@@ -7,17 +7,16 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   safelist: [
-    // Dynamic color palette used by auto-color system
+    // Level 1 + Level 2 color palettes
     ...[
-      "blue", "emerald", "purple", "amber", "rose", "teal", "cyan",
-      "indigo", "orange", "pink", "lime", "violet", "sky", "fuchsia",
+      "blue", "teal", "indigo", "emerald", "amber", "slate",
+      "sky", "rose", "violet", "cyan", "orange", "lime",
     ].flatMap((color) => [
-      `bg-${color}-100`, `bg-${color}-50`,
-      `dark:bg-${color}-900/40`, `dark:bg-${color}-950/30`,
-      `text-${color}-700`, `text-${color}-300`,
-      `dark:text-${color}-300`,
-      `border-${color}-400`,
-      `from-${color}-500`, `to-${color}-600`,
+      `bg-${color}-50`, `bg-${color}-100`, `bg-${color}-500`,
+      `dark:bg-${color}-950/40`, `dark:bg-${color}-900/50`,
+      `text-${color}-800`, `text-${color}-200`,
+      `dark:text-${color}-200`,
+      `border-${color}-300`,
     ]),
   ],
   darkMode: "class",
