@@ -75,7 +75,7 @@ export default function SubCategoryPage() {
                   {categoryName}
                 </span>
                 <span className="text-gray-400">›</span>
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${subC.text}`}>Level 3 · Articles</span>
+                <span className={`text-[10px] font-bold uppercase tracking-widest ${subC.text}`}>Articles</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{subName}</h1>
             </div>

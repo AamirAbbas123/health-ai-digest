@@ -54,7 +54,7 @@ export default function CategoryPage() {
               <div className="w-5 h-5 rounded-full bg-white/40" />
             </div>
             <div>
-              <p className={`text-xs font-bold uppercase tracking-widest ${catC.text} mb-1`}>Level 1 · Category</p>
+              <p className={`text-xs font-bold uppercase tracking-widest ${catC.text} mb-1`}>Category</p>
               <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">{categoryName}</h1>
             </div>
           </div>
@@ -63,7 +63,6 @@ export default function CategoryPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">Level 2</p>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Sub-topics</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">Select a sub-topic to view related articles</p>
         </div>

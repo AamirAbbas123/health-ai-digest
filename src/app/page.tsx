@@ -46,7 +46,6 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-10">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary-500 dark:text-primary-400 mb-2">Level 1</p>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Main Categories</h2>
           <p className="text-gray-500 dark:text-gray-400">Select a category to explore its sub-topics</p>
         </div>
