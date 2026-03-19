@@ -119,7 +119,7 @@ export default function ArticleDetailPage() {
           {/* Content Slider */}
           <div className="bg-surface dark:bg-gray-800 rounded-lg p-4 mb-8 border border-gray-200 dark:border-gray-700">
             <p className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              Content Detail Level
+              Summary Detail Level
             </p>
             <ContentSlider />
           </div>

@@ -146,7 +146,7 @@ export default function AdminPage() {
 
   const handleSubmit = async (publish: boolean) => {
     if (!title.trim() || !fullContent.trim()) {
-      toast.error("Title and Full Content are required");
+      toast.error("Title and Detailed Summary are required");
       return;
     }
 
@@ -405,45 +405,45 @@ export default function AdminPage() {
           <div className="space-y-6 mb-6">
             <div className="border-l-4 border-blue-500 pl-4">
               <label className="block text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1">
-                Full Article
+                Detailed Summary
               </label>
-              <p className="text-xs text-gray-400 mb-2">Recommended: 800-2000 words</p>
+              <p className="text-xs text-gray-400 mb-2">Recommended: 400-800 words — a comprehensive summary covering key findings and context</p>
               <textarea
                 value={fullContent}
                 onChange={(e) => setFullContent(e.target.value)}
                 rows={12}
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none resize-y"
-                placeholder="Paste the complete article here..."
+                placeholder="Paste a detailed summary here (key findings, methodology, implications)..."
               />
               <p className="text-xs text-gray-400 mt-1">{wordCount(fullContent)} words</p>
             </div>
 
             <div className="border-l-4 border-yellow-500 pl-4">
               <label className="block text-sm font-semibold text-yellow-700 dark:text-yellow-400 mb-1">
-                Medium Summary
+                Brief Summary
               </label>
-              <p className="text-xs text-gray-400 mb-2">Recommended: 200-400 words</p>
+              <p className="text-xs text-gray-400 mb-2">Recommended: 100-250 words — a concise overview of the main points</p>
               <textarea
                 value={mediumSummary}
                 onChange={(e) => setMediumSummary(e.target.value)}
                 rows={6}
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 outline-none resize-y"
-                placeholder="Paste a 3-5 paragraph summary here..."
+                placeholder="Paste a 2-3 paragraph brief summary here..."
               />
               <p className="text-xs text-gray-400 mt-1">{wordCount(mediumSummary)} words</p>
             </div>
 
             <div className="border-l-4 border-green-500 pl-4">
               <label className="block text-sm font-semibold text-green-700 dark:text-green-400 mb-1">
-                Short Summary / Quick Read
+                Quick Read
               </label>
-              <p className="text-xs text-gray-400 mb-2">Recommended: 40-80 words</p>
+              <p className="text-xs text-gray-400 mb-2">Recommended: 30-60 words — a 1-2 sentence takeaway</p>
               <textarea
                 value={shortSummary}
                 onChange={(e) => setShortSummary(e.target.value)}
                 rows={3}
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 outline-none resize-y"
-                placeholder="Paste a 2-3 sentence summary here..."
+                placeholder="Paste a 1-2 sentence quick read here..."
               />
               <p className="text-xs text-gray-400 mt-1">{wordCount(shortSummary)} words</p>
             </div>

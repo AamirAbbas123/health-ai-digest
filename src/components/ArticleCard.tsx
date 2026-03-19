@@ -28,8 +28,9 @@ export default function ArticleCard({ article }: { article: Article }) {
       ? article.mediumSummary
       : article.shortSummary;
 
+  const maxLen = level === 1 ? 400 : level === 2 ? 250 : content.length;
   const truncatedContent =
-    level === 1 ? content.slice(0, 300) + (content.length > 300 ? "..." : "") : content;
+    content.length > maxLen ? content.slice(0, maxLen) + "..." : content;
 
   return (
     <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-gray-100 dark:border-gray-700">
@@ -68,14 +69,12 @@ export default function ArticleCard({ article }: { article: Article }) {
         >
           <p className="whitespace-pre-line">{truncatedContent}</p>
         </div>
-        {level === 1 && (
-          <Link
-            href={`/articles/${article.id}`}
-            className="inline-block mt-3 text-sm font-medium text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
-          >
-            Read More &rarr;
-          </Link>
-        )}
+        <Link
+          href={`/articles/${article.id}`}
+          className="inline-block mt-3 text-sm font-medium text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
+        >
+          Read More &rarr;
+        </Link>
       </div>
     </div>
   );

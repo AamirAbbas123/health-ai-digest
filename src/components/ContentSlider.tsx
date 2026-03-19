@@ -2,7 +2,7 @@
 
 import { useContentLevel } from "@/context/ContentLevelContext";
 
-const labels = ["Full Article", "Summary", "Quick Read"];
+const labels = ["Detailed Summary", "Brief Summary", "Quick Read"];
 
 export default function ContentSlider() {
   const { level, setLevel } = useContentLevel();

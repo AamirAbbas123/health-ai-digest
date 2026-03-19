@@ -78,7 +78,7 @@ export default function Home() {
         {/* Content Slider */}
         <div className="bg-surface dark:bg-gray-900 rounded-xl p-4 mb-8 border border-gray-200 dark:border-gray-800">
           <p className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-            Content Detail Level
+            Summary Detail Level
           </p>
           <ContentSlider />
         </div>
