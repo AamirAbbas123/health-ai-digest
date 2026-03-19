@@ -13,8 +13,8 @@ const config: Config = {
       "sky", "rose", "violet", "cyan", "orange", "lime",
     ].flatMap((color) => [
       `bg-${color}-50`, `bg-${color}-100`, `bg-${color}-500`,
-      `dark:bg-${color}-950/40`, `dark:bg-${color}-900/50`,
-      `text-${color}-800`, `text-${color}-200`,
+      `dark:bg-${color}-950/40`, `dark:bg-${color}-900/40`, `dark:bg-${color}-900/50`,
+      `text-${color}-700`, `text-${color}-800`, `text-${color}-200`,
       `dark:text-${color}-200`,
       `border-${color}-300`,
     ]),

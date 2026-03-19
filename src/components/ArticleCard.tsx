@@ -5,6 +5,23 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { useContentLevel } from "@/context/ContentLevelContext";
 import CategoryBadge from "./CategoryBadge";
+import { getSubColor } from "@/lib/categories";
+
+// Soft, eye-pleasing card background colors
+const CARD_BG_COLORS = [
+  { bg: "bg-sky-100 dark:bg-sky-900/40", text: "text-sky-700 dark:text-sky-200" },
+  { bg: "bg-rose-100 dark:bg-rose-900/40", text: "text-rose-700 dark:text-rose-200" },
+  { bg: "bg-amber-100 dark:bg-amber-900/40", text: "text-amber-700 dark:text-amber-200" },
+  { bg: "bg-emerald-100 dark:bg-emerald-900/40", text: "text-emerald-700 dark:text-emerald-200" },
+  { bg: "bg-violet-100 dark:bg-violet-900/40", text: "text-violet-700 dark:text-violet-200" },
+  { bg: "bg-teal-100 dark:bg-teal-900/40", text: "text-teal-700 dark:text-teal-200" },
+  { bg: "bg-indigo-100 dark:bg-indigo-900/40", text: "text-indigo-700 dark:text-indigo-200" },
+  { bg: "bg-orange-100 dark:bg-orange-900/40", text: "text-orange-700 dark:text-orange-200" },
+];
+
+function getCardColor(id: number) {
+  return CARD_BG_COLORS[id % CARD_BG_COLORS.length];
+}
 
 interface Article {
   id: number;
@@ -34,25 +51,37 @@ export default function ArticleCard({ article }: { article: Article }) {
   const truncatedContent =
     content.length > maxLen ? content.slice(0, maxLen) + "..." : content;
 
+  const hasRealImage = article.imageUrl && !article.imageUrl.includes("placehold.co");
+  const cardColor = getCardColor(article.id);
+  const subColor = article.subCategory ? getSubColor(article.subCategory) : null;
+
   return (
     <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-gray-100 dark:border-gray-700">
       <Link href={`/articles/${article.id}`}>
-        <div className="relative aspect-video overflow-hidden">
-          <Image
-            src={article.imageUrl || "https://placehold.co/800x450/0D7377/FFFFFF?text=Health+AI"}
-            alt={article.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            unoptimized
-          />
-        </div>
+        {hasRealImage ? (
+          <div className="relative aspect-video overflow-hidden">
+            <Image
+              src={article.imageUrl!}
+              alt={article.title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              unoptimized
+            />
+          </div>
+        ) : (
+          <div className={`relative aspect-video overflow-hidden ${cardColor.bg} flex items-center justify-center p-6`}>
+            <p className={`text-2xl sm:text-3xl font-bold text-center leading-tight ${cardColor.text}`}>
+              {article.shortTitle || article.subCategory || article.category}
+            </p>
+          </div>
+        )}
       </Link>
       <div className="p-5">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <CategoryBadge category={article.category} />
-          {article.subCategory && (
-            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+          {article.subCategory && subColor && (
+            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium ${subColor.badge}`}>
               {article.subCategory}
             </span>
           )}
@@ -61,7 +90,7 @@ export default function ArticleCard({ article }: { article: Article }) {
           </span>
         </div>
         {article.shortTitle && (
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-primary-500 dark:text-primary-400 mb-1">
+          <p className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${cardColor.text}`}>
             {article.shortTitle}
           </p>
         )}
