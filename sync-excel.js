@@ -45,26 +45,7 @@ console.log("─".repeat(45));
 // Step 1: Extract Excel to JSON using Python
 console.log("\n  Step 1: Reading Excel file...");
 try {
-  execSync(`python -c "
-import openpyxl, json, sys
-
-wb = openpyxl.load_workbook('${EXCEL_FILE.replace(/\\/g, "\\\\")}')
-ws = wb['Articles']
-headers = [cell.value for cell in ws[1]]
-articles = []
-for row in ws.iter_rows(min_row=2, values_only=True):
-    if not row[0]:
-        continue
-    art = {}
-    for i, h in enumerate(headers):
-        val = row[i] if i < len(row) else None
-        art[h] = str(val) if val else ''
-    articles.append(art)
-
-with open('${JSON_FILE.replace(/\\/g, "\\\\")}', 'w') as f:
-    json.dump(articles, f, indent=2)
-print(f'   Found {len(articles)} articles')
-"`, { stdio: "inherit" });
+  execSync("python extract-excel.py", { stdio: "inherit", cwd: __dirname });
 } catch (e) {
   console.error("❌ Failed to read Excel. Is openpyxl installed? Run: pip install openpyxl");
   process.exit(1);
