@@ -7,29 +7,36 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const article = await prisma.article.findUnique({
-    where: { id: parseInt(params.id) },
-  });
+  try {
+    const { id } = await params;
+    const article = await prisma.article.findUnique({
+      where: { id: parseInt(id) },
+    });
 
-  if (!article) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!article) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(article);
+  } catch (error) {
+    console.error("Error fetching article:", error);
+    return NextResponse.json({ error: "Failed to fetch article" }, { status: 500 });
   }
-
-  return NextResponse.json(article);
 }
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
+    const { id } = await params;
     const formData = await request.formData();
     const existing = await prisma.article.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
     });
 
     if (!existing) {
@@ -45,7 +52,7 @@ export async function PUT(
     }
 
     const article = await prisma.article.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: {
         title: formData.get("title") as string,
         category: formData.get("category") as string,
@@ -73,13 +80,14 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
+    const { id } = await params;
     const article = await prisma.article.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
     });
 
     if (!article) {
@@ -89,7 +97,7 @@ export async function DELETE(
     await deleteImage(article.imageUrl || "");
 
     await prisma.article.delete({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
     });
 
     return NextResponse.json({ success: true });

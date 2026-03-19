@@ -4,26 +4,31 @@ import { isAuthenticated } from "@/lib/auth";
 import { uploadImage } from "@/lib/upload";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const category = searchParams.get("category");
-  const limit = searchParams.get("limit");
-  const offset = searchParams.get("offset");
+  try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get("category");
+    const limit = searchParams.get("limit");
+    const offset = searchParams.get("offset");
 
-  const articles = await prisma.article.findMany({
-    where: {
-      isPublished: true,
-      ...(category ? { category } : {}),
-    },
-    orderBy: { publishedAt: "desc" },
-    ...(limit ? { take: parseInt(limit) } : {}),
-    ...(offset ? { skip: parseInt(offset) } : {}),
-  });
+    const articles = await prisma.article.findMany({
+      where: {
+        isPublished: true,
+        ...(category ? { category } : {}),
+      },
+      orderBy: { publishedAt: "desc" },
+      ...(limit ? { take: parseInt(limit) } : {}),
+      ...(offset ? { skip: parseInt(offset) } : {}),
+    });
 
-  return NextResponse.json(articles);
+    return NextResponse.json(articles);
+  } catch (error) {
+    console.error("Error fetching articles:", error);
+    return NextResponse.json({ error: "Failed to fetch articles" }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

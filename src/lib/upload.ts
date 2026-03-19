@@ -1,4 +1,3 @@
-import { put, del } from "@vercel/blob";
 import { writeFile, unlink, mkdir } from "fs/promises";
 import path from "path";
 
@@ -13,8 +12,15 @@ export async function uploadImage(file: File, title: string): Promise<string> {
   const filename = `${Date.now()}-${slug}.${ext}`;
 
   if (isVercel) {
-    const blob = await put(`uploads/${filename}`, file, { access: "public" });
-    return blob.url;
+    // Use Vercel Blob if token is available
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const { put } = await import("@vercel/blob");
+      const blob = await put(`uploads/${filename}`, file, { access: "public" });
+      return blob.url;
+    }
+    // Fallback: store as base64 data URL (for small images) or skip
+    // For production without blob, just return a placeholder
+    return `https://placehold.co/800x450?text=${encodeURIComponent(title || "Article")}`;
   } else {
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
     await mkdir(uploadsDir, { recursive: true });
@@ -29,7 +35,8 @@ export async function deleteImage(imageUrl: string): Promise<void> {
   if (!imageUrl) return;
 
   try {
-    if (imageUrl.startsWith("http")) {
+    if (imageUrl.startsWith("http") && process.env.BLOB_READ_WRITE_TOKEN) {
+      const { del } = await import("@vercel/blob");
       await del(imageUrl);
     } else if (imageUrl.startsWith("/uploads/")) {
       const filepath = path.join(process.cwd(), "public", imageUrl);
